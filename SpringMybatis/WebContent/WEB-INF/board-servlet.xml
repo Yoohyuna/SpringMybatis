@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+<!-- @Autowired,@Required  -->
+<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
+<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+<!-- (4) viewResolver(위치)(prefix), 이동할페이지의 확장자를 지정(suffix)-->
+<bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+  <property name="viewClass"   value="org.springframework.web.servlet.view.JstlView" />
+  <property name="prefix"  value="/" />
+  <property name="suffix"  value=".jsp" />
+</bean>
+
+<!-- (2)요청에 따른 컨트롤러를 문의? -->
+<bean id="defaultHandlerMapping"  
+          class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+<!-- (3)요청명령어에 해당하는 컨트롤러를 이용(처리)
+    <bean name="/요청명령어.do"  class="패키지명....처리할 컨트롤러 클래스명" />
+     DB접속방법->JNDI 방법
+ -->
+ <!-- <bean id="boardDAO" class="lee.BoardDAO" /> -->
+ <bean id="boardDAO"  class="lee.SqlMapBoardDao">
+     <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+ </bean>
+ 
+ <!--1.글목록보기  -->
+ <!-- before
+ <bean name="/list.do"  class="lee.ListActionController">
+     <property name="dao">
+           <ref bean="boardDAO" />
+     </property>
+ </bean>
+  -->
+  
+ <bean name="/list.do"  class="lee.ListActionController" />
+ 
+ <!--2.글쓰기 폼으로 이동시 사용  -->
+ <bean name="/writeui.do" 
+           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="write"></property>   
+ </bean>
+ 
+<!--3.글쓰기(글수정하기와 거의유사)  -->
+<bean name="/write.do"  class="lee.WriteActionController">
+     <property name="dao">
+           <ref bean="boardDAO" />
+     </property>
+     <property name="commandClass"  value="lee.BoardCommand" />
+ </bean>
+ 
+<!--4.글상세보기  -->
+<bean name="/retrieve.do"  class="lee.RetrieveActionController">
+     <property name="dao">
+           <ref bean="boardDAO" />
+     </property>
+ </bean>
+
+<!--5.글수정하기  -->
+<bean name="/update.do"  class="lee.UpdateActionController">
+     <property name="dao">
+           <ref bean="boardDAO" />
+     </property>
+     <property name="commandClass"  value="lee.BoardCommand" />
+ </bean>
+ 
+<!--6.글삭제하기  -->
+<bean name="/delete.do"  class="lee.DeleteActionController">
+     <property name="dao">
+           <ref bean="boardDAO" />
+     </property>
+ </bean>
+
+<!--7.글검색하기 (검색하기위해서 입력)(페이징 처리X) -->
+<bean name="/search.do"  class="lee.SearchActionController">
+     <property name="dao">
+           <ref bean="boardDAO" />
+     </property>
+ </bean>
+ 
+</beans>
+
+
+
